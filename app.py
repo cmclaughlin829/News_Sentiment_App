@@ -9,6 +9,7 @@ import json
 import pickle
 from datetime import datetime, timedelta
 
+#Import Data
 with open('data/article_wordcount_dict.pkl', 'rb') as handle:
     article_wordcount_dict = pickle.load(handle)
 
@@ -30,6 +31,7 @@ with open('data/total_share_count_dict.pkl', 'rb') as handle:
 with open('data/df_histogram.pkl', 'rb') as handle:
     df = pickle.load(handle)
 
+#Set color scheme for candidate groups
 colors_dict = {
     'trump_source': 'rgb(256, 0, 0)',
     'trump_shares': 'rgb(256, 180, 180)',
@@ -37,6 +39,7 @@ colors_dict = {
     'clinton_shares': 'rgb(180, 180, 256)'
 }
 
+#Set sentiment graph legend text
 legend_dict = {
     'trump_source': 'Trump - Top Sources',
     'trump_shares': 'Trump - Most Shares',
@@ -60,6 +63,7 @@ server = app.server
 
 controlpanel = dui.ControlPanel(_id = 'controlpanel')
 
+#Create control panel using dash_ui
 controlpanel.create_group(
     group = 'body_title_group',
     group_title = 'Calculate Sentiment of Article Body or Title?'
@@ -133,6 +137,7 @@ controlpanel.create_group(
     '''
 )
 
+#Crete dashboard layout
 grid = dui.Grid(
     _id = 'grid',
     num_rows = 12,
@@ -154,6 +159,7 @@ _style = {
     "margin-right": 2
 }
 
+#dashboard title container
 grid.add_element(
     col = 1,
     row = 1,
@@ -186,10 +192,14 @@ grid.add_element(
             ]
     )
 )
+
+#dashboard graph elements
 grid.add_graph(col = 1, row = 2, width = 12, height = 4, graph_id = 'sentiment_graph')
 grid.add_graph(col = 1, row = 6, width = 4, height = 6, graph_id = 'word_count_bar')
 grid.add_graph(col = 5, row = 6, width = 4, height = 6, graph_id = 'share_count_bar')
 grid.add_graph(col = 9, row = 6, width = 4, height = 6, graph_id = 'shares_scatter')
+
+#dashboard article information containers
 grid.add_element(
     col = 1,
     row = 12,
@@ -238,6 +248,7 @@ app.layout = html.Div(
     }
 )
 
+#callback to update sentiment graph based on control panel selections
 @app.callback(
     Output('sentiment_graph', 'figure'),
     [Input('body_title_radio', 'value'),
@@ -284,6 +295,7 @@ def update_sentiment(body_title, week_month, trump_clinton):
         'layout': layout
     }
 
+#callback to update word count bar chart
 @app.callback(
     Output('word_count_bar', 'figure'),
     [Input('body_title_radio', 'value'),
@@ -292,6 +304,7 @@ def update_sentiment(body_title, week_month, trump_clinton):
      Input('sentiment_graph', 'clickData')]
 )
 def update_word_count(body_title, week_month, checklist, clickData):
+    #set default value if clickData is empty
     if clickData:
         curve_number = clickData['points'][0]['curveNumber']
         trace_name = checklist[curve_number]
@@ -325,8 +338,8 @@ def update_word_count(body_title, week_month, checklist, clickData):
         yaxis = {
             'title': 'Word Frequency'
         },
-        title = '20 Most Frequently <br>Used Words in Article {}'\
-                .format(body_title_str)
+        title = '20 Most Frequently Used Words<br>in Article {} ({})'\
+                .format(body_title_str, date)
     )
 
     return {
@@ -334,6 +347,7 @@ def update_word_count(body_title, week_month, checklist, clickData):
         'layout': layout
     }
 
+#callback to update share count bar chart
 @app.callback(
     Output('share_count_bar', 'figure'),
     [Input('body_title_radio', 'value'),
@@ -350,6 +364,7 @@ def update_share_count(body_title, week_month, mean_total, checklist, clickData)
         share_count_dict = total_share_count_dict
         mean_total_str = 'Total'
 
+    #set default value if clickData is empty
     if clickData:
         curve_number = clickData['points'][0]['curveNumber']
         trace_name = checklist[curve_number]
@@ -376,7 +391,7 @@ def update_share_count(body_title, week_month, mean_total, checklist, clickData)
         yaxis = {
             'title': 'Shares'
         },
-        title = '{} Shares <br>by News Source (Top 20)'.format(mean_total_str),
+        title = 'Top 20 News Sources by<br>{} Shares ({})'.format(mean_total_str, date),
         clickmode = 'event+select'
     )
 
@@ -385,6 +400,7 @@ def update_share_count(body_title, week_month, mean_total, checklist, clickData)
         'layout': layout
     }
 
+#callback to update shares scatter plot
 @app.callback(
     Output('shares_scatter', 'figure'),
     [Input('body_title_radio', 'value'),
@@ -396,6 +412,7 @@ def update_share_count(body_title, week_month, mean_total, checklist, clickData)
 )
 def update_shares_scatter(body_title, week_month, mean_total, checklist, \
                          clickData, selectedData):
+    #set default value if clickData is empty
     if clickData:
         end_date_str = clickData['points'][0]['x']
         curve_number = clickData['points'][0]['curveNumber']
@@ -424,6 +441,8 @@ def update_shares_scatter(body_title, week_month, mean_total, checklist, \
     else:
         sentiment_str = 'titleSentiment'
 
+    #set default value if selectedData is empty
+    #if not empty, create list of selected news sources
     if selectedData:
         source_list = [selectedData['points'][i]['x'] for i in \
                     range(len(selectedData['points']))]
@@ -431,10 +450,13 @@ def update_shares_scatter(body_title, week_month, mean_total, checklist, \
         source_list = list(share_count_dict[trace_name][week_month]\
                     [end_date_str].keys())
 
+    #filter df based on selections
     df_filtered = df[(df['origin'] == trace_name) & (df['news_source'].\
                 isin(source_list))].sort_index().loc[start_date:end_date]
     df_range = df[df['origin'] == trace_name].sort_index()\
                 .loc[start_date:end_date]
+
+    #determine static axis range
     max_shares = df_range.facebook_shares.max()
     padding = max_shares/20
 
@@ -461,7 +483,8 @@ def update_shares_scatter(body_title, week_month, mean_total, checklist, \
             'title': 'Sentiment'
         },
         clickmode = 'event+select',
-        title = 'Article Shares vs. {} Sentiment'.format(body_title.capitalize())
+        title = 'Article Shares vs. {} Sentiment<br>({})'\
+                .format(body_title.capitalize(), end_date_str)
     )
 
     return {
@@ -469,6 +492,7 @@ def update_shares_scatter(body_title, week_month, mean_total, checklist, \
         'layout': layout
     }
 
+#callback to update shared article title
 @app.callback(
     Output('shared_article', 'children'),
     [Input('week_month_radio', 'value'),
@@ -479,6 +503,9 @@ def update_shares_scatter(body_title, week_month, mean_total, checklist, \
 )
 def update_shared_article(week_month, body_title, checklist, sent_clickData,\
                         scat_clickData):
+    #set default value if sent_clickData is empty
+    #account for empty data and both week_month options (different end dates)
+    #avoids key error in dict lookup
     if sent_clickData:
         end_date_str = sent_clickData['points'][0]['x']
         curve_number = sent_clickData['points'][0]['curveNumber']
@@ -497,9 +524,12 @@ def update_shared_article(week_month, body_title, checklist, sent_clickData,\
     else:
         start_date = end_date - timedelta(days = 6)
 
+    #create filtered df based on selections
     df_filtered = df[df['origin'] == trace_name].sort_index()\
                 .loc[start_date:end_date]
 
+    #set default value if scat_clickData is empty
+    #if not empty identify df row containing selected article
     if scat_clickData:
         marker_id = scat_clickData['points'][0]['text']
         row = df_filtered[df_filtered['row_id'] == marker_id]
@@ -510,6 +540,7 @@ def update_shared_article(week_month, body_title, checklist, sent_clickData,\
 
     return text
 
+#callback to update shared article title
 @app.callback(
     Output('shared_article_source', 'children'),
     [Input('week_month_radio', 'value'),
@@ -520,13 +551,19 @@ def update_shared_article(week_month, body_title, checklist, sent_clickData,\
 )
 def update_shared_article_source(week_month, body_title, checklist, \
                                 sent_clickData, scat_clickData):
+    #set default value if sent_clickData is empty
+    #account for empty data and both week_month options (different end dates)
+    #avoids key error in dict lookup
     if sent_clickData:
         end_date_str = sent_clickData['points'][0]['x']
         curve_number = sent_clickData['points'][0]['curveNumber']
         trace_name = checklist[curve_number]
-    else:
-        end_date_str = '01/09/2016'
+    elif sent_clickData is None and week_month == 'W-SAT':
         trace_name = 'trump_shares'
+        end_date_str = '01/09/2016'
+    else:
+        trace_name = 'trump_shares'
+        end_date_str = '01/31/2016'
 
     end_date = datetime.strptime(end_date_str, '%m/%d/%Y').date()
 
@@ -535,9 +572,12 @@ def update_shared_article_source(week_month, body_title, checklist, \
     else:
         start_date = end_date - timedelta(days = 6)
 
+    #create filtered df based on selections
     df_filtered = df[df['origin'] == trace_name].sort_index()\
                 .loc[start_date:end_date]
 
+    #set default value if scat_clickData is empty
+    #if not empty identify df row containing selected article
     if scat_clickData:
         marker_id = scat_clickData['points'][0]['text']
         row = df_filtered[df_filtered['row_id'] == marker_id]
@@ -548,6 +588,7 @@ def update_shared_article_source(week_month, body_title, checklist, \
 
     return text
 
+#callbacks to clear selectedData and clickData when new date is selected
 @app.callback(
     Output('share_count_bar', 'selectedData'),
     [Input('sentiment_graph', 'clickData')]
