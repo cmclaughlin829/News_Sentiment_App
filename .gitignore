@@ -4,3 +4,4 @@ __pycache__/*
 ipynb/*
 env.txt
 .DS_Store
+data/sentiment_df.pkl
