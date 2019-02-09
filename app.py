@@ -133,7 +133,8 @@ controlpanel.create_group(
     group = 'instructions_group2',
     group_title = '''All articles and data acquired from eventregistry.org.  \
                      Sentiment calculated using vaderSentiment. for additional \
-                     information please visit https://github.com/cmclaughlin829
+                     information please visit \
+                     https://github.com/cmclaughlin829/News_Sentiment_App
     '''
 )
 
