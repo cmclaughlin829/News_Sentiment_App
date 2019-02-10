@@ -168,8 +168,8 @@ grid.add_element(
     element =
         html.Div([
             html.H1(
-                children = 'News Sentiment Analysis of 2016 Presidential \
-                            Election News Coverage',
+                children = 'Sentiment Analysis of 2016 Presidential Election \
+                News Coverage',
                 id = 'app_title',
                 style = {
                     'font-family': 'Georgia',
