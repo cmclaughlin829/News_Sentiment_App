@@ -1,4 +1,4 @@
-# News Sentiment Analysis of 2016 Presidential Election News Coverage
+# Sentiment Analysis of 2016 Presidential Election News Coverage
 
 ### Introduction
 The intention of this application is to allow for visualization of sentiment trends from printed
