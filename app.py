@@ -212,11 +212,9 @@ grid.add_element(
             id = 'shared_article',
             style = {
                 'background-color': 'white',
-                #'margin': '10',
                 'height': '100%',
                 'width': '100%',
                 'fontSize': '1.25vw'
-                #'border': '1px solid'
             }
         )
 )
@@ -230,11 +228,9 @@ grid.add_element(
             id = 'shared_article_source',
             style = {
                 'background-color': 'white',
-                #'margin': '10',
                 'height': '100%',
                 'width': '100%',
                 'fontSize': '1.25vw'
-                #'border': '1px solid'
             }
         )
 )

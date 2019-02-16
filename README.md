@@ -14,5 +14,3 @@ The application was created using dash to allow for interactive visualizations. 
 The Mean Article Sentiment chart shows how sentiment tracked throughout the election cycle for each candidate, both for articles from the top news sources as well as those that were most shared on facebook.  If the user selects a point on this chart the Word Frequency, Shares by News Source and Shares vs. Sentiment graphs are all updated accordingly.  
 
 Selecting a bar in the Shares by News Source graph limits the Shares vs. Sentiment graph to only that news source (shift+click allows for multiple selections and deselections).  Selecting a point on the Shares vs. Sentiment graph displays the article title and news source at the bottom of the dashboard.
-
-I intend to release an article outlining my methodology in the near future.
