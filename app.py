@@ -48,8 +48,8 @@ legend_dict = {
 }
 
 my_css_urls = [
-  "https://cmclaughlin829.github.io/csstemplate/dash_ui.css",
-  "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+  "https://cmclaughlin829.github.io/csstemplate/dash_ui.css"#,
+  #"https://use.fontawesome.com/releases/v5.1.0/css/all.css"
 ]
 
 app = dash.Dash()
