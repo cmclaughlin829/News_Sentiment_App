@@ -8,7 +8,7 @@ media over the course of the 2016 presidential election.
 
 ### Approach
 300 articles, with titles containing the candidate's last name, were collected for each week of 2016 from the top 20 US news sources (per Alexa Global Rank on 1/12/2019).  Additionally, the 100 articles with the most shares on facebook from each week of the election cycle were also collected for each candidate.  The sentiment of each article was then determined using [vaderSentiment](https://github.com/cjhutto/vaderSentiment).
-All news articles and data were obtained using the python api for  [Event Registry](https://eventregistry.org/).  A web application to view the results of the analysis was created using plotly dash and is available [online](https://news-sentiment-analysis.herokuapp.com/).
+All news articles and data were obtained using the python api for  [Event Registry](https://eventregistry.org/).
 
 ### Using the Web Application
 The application was created using dash to allow for interactive visualizations.  The control panel can be utilized to select if the mean sentiment is calculated based on the article title or article body.  The user can also select if the mean sentiment is calculated by week or month, and if news sources should be ranked by total shares or mean shares.
